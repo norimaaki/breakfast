@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>朝食べるなら</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      padding: 20px;
+    }
+    button {
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <button id="breadButton" class="btn btn-primary" onclick="countButtonClick('bread')">パン派</button>
+        <button id="riceButton" class="btn btn-success" onclick="countButtonClick('rice')">ご飯派</button>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col">
+        <h2 id="clickRatio">朝の食事選好:</h2>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col">
+        <!-- パイグラフを表示するCanvas要素 -->
+        <canvas id="clickChart" width="400" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let clickCounts = {
+      'bread': 0,
+      'rice': 0
+    };
+
+    function countButtonClick(choice) {
+      clickCounts[choice]++;
+      updateClickRatio();
+      updatePieChart();
+    }
+
+    function updateClickRatio() {
+      const totalClicks = clickCounts['bread'] + clickCounts['rice'];
+      const ratioBread = (clickCounts['bread'] / totalClicks) * 100;
+      const ratioRice = (clickCounts['rice'] / totalClicks) * 100;
+      document.getElementById('clickRatio').innerHTML = `選好割合:<br>パン派: ${ratioBread.toFixed(2)}%<br>ご飯派: ${ratioRice.toFixed(2)}%`;
+    }
+
+    function updatePieChart() {
+      const ctx = document.getElementById('clickChart').getContext('2d');
+      const data = {
+        labels: ['パン派', 'ご飯派'],
+        datasets: [{
+          data: [clickCounts['bread'], clickCounts['rice']],
+          backgroundColor: ['#007bff', '#28a745'],
+          hoverBackgroundColor: ['#0056b3', '#218838']
+        }]
+      };
+      const options = {
+        responsive: true
+      };
+
+      // 既存のグラフを破棄してから新しいグラフを描画
+      if(window.myPie) {
+        window.myPie.destroy();
+      }
+      
+      window.myPie = new Chart(ctx, {
+        type: 'pie',
+        data: data,
+        options: options
+      });
+    }
+  </script>
+
+</body>
+</html>
